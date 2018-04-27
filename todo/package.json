@@ -9,7 +9,7 @@
   "dependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
-    "babel-plugin-relay": "^1.5.0",
+    "babel-plugin-relay": "file:../../relay/dist/babel-plugin-relay",
     "babel-plugin-transform-runtime": "^6.12.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.11.1",
@@ -23,7 +23,8 @@
     "prop-types": "^15.6.1",
     "react": "^16.3.0",
     "react-dom": "^16.3.0",
-    "react-relay": "1.5.0",
+    "react-relay": "file:../../relay/dist/react-relay",
+    "relay-test-utils": "file:../../relay/dist/relay-test-utils",
     "todomvc-app-css": "^2.1.0",
     "todomvc-common": "^1.0.3",
     "webpack": "^4.4.1",
@@ -38,6 +39,13 @@
     "eslint-plugin-babel": "3.3.0",
     "eslint-plugin-flowtype": "2.15.0",
     "eslint-plugin-react": "5.2.2",
-    "relay-compiler": "1.5.0"
+    "relay-compiler": "file:../../relay/dist/relay-compiler"
+  },
+  "resolutions": {
+    "react-relay/**/relay-runtime": "file:../../relay/dist/relay-runtime",
+    "relay-test-utils/**/relay-runtime": "file:../../relay/dist/relay-runtime",
+    "relay-test-utils/**/relay-compiler": "file:../../relay/dist/relay-compiler",
+    "relay-compiler/**/graphql-compiler": "file:../../relay/dist/graphql-compiler",
+    "relay-compiler/**/relay-runtime": "file:../../relay/dist/relay-runtime"
   }
 }
