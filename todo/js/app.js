@@ -10,28 +10,18 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import 'todomvc-common';
+import 'todomvc-common'
 
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from 'react'
+import ReactDOM from 'react-dom'
 
-import {
-  QueryRenderer,
-  graphql,
-} from 'react-relay';
-import {
-  Environment,
-  Network,
-  RecordSource,
-  Store,
-} from 'relay-runtime';
+import { QueryRenderer, graphql } from 'react-relay'
+import QueryLookupRenderer from 'relay-query-lookup-renderer'
+import { Environment, Network, RecordSource, Store } from 'relay-runtime'
 
-import TodoApp from './components/TodoApp';
+import TodoApp from './components/TodoApp'
 
-function fetchQuery(
-  operation,
-  variables,
-) {
+function fetchQuery(operation, variables) {
   return fetch('/graphql', {
     method: 'POST',
     headers: {
@@ -42,33 +32,73 @@ function fetchQuery(
       variables,
     }),
   }).then(response => {
-    return response.json();
-  });
+    return response.json()
+  })
 }
 
 const modernEnvironment = new Environment({
   network: Network.create(fetchQuery),
   store: new Store(new RecordSource()),
-});
+})
 
-ReactDOM.render(
-  <QueryRenderer
-    environment={modernEnvironment}
-    query={graphql`
-      query appQuery {
-        viewer {
-          ...TodoApp_viewer
-        }
-      }
-    `}
-    variables={{}}
-    render={({error, props}) => {
-      if (props) {
-        return <TodoApp viewer={props.viewer} />;
-      } else {
-        return <div>Loading</div>;
-      }
-    }}
-  />,
-  document.getElementById('root')
-);
+class ReproductionCase extends React.Component {
+  state = {
+    first: 10,
+    status: 'any',
+  }
+  onToggleStatus = () => {
+    this.setState(({ status }) => ({
+      status: status === 'any' ? 'complete' : 'any',
+    }))
+  }
+
+  render() {
+    return (
+      <React.Fragment>
+        <div>
+          <h1>fetching todos with status {this.state.status}</h1>
+          <button
+            style={{
+              padding: '2px 6px 3px',
+              borderWidth: '2px',
+              borderStyle: 'outset',
+              borderColor: 'buttonface',
+              borderImage: 'initial',
+              WebkitAppearance: 'button',
+              color: 'buttontext',
+              backgroundColor: 'buttonface',
+            }}
+            type="button"
+            onClick={this.onToggleStatus}
+          >
+            toggle status to {this.state.status === 'any' ? 'complete' : 'any'}
+          </button>
+        </div>
+        <QueryLookupRenderer
+          lookup
+          retain
+          environment={modernEnvironment}
+          query={graphql`
+            query appQuery($status: String) {
+              viewer {
+                ...TodoApp_viewer @arguments(status: $status)
+              }
+            }
+          `}
+          variables={{
+            status: this.state.status,
+          }}
+          render={({ error, props }) => {
+            if (props) {
+              return <TodoApp viewer={props.viewer} />
+            } else {
+              return <div>Loading</div>
+            }
+          }}
+        />
+      </React.Fragment>
+    )
+  }
+}
+
+ReactDOM.render(<ReproductionCase />, document.getElementById('root'))

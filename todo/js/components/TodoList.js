@@ -62,9 +62,13 @@ class TodoList extends React.Component {
 
 export default createFragmentContainer(TodoList, {
   viewer: graphql`
-    fragment TodoList_viewer on User {
+    fragment TodoList_viewer on User
+    @argumentDefinitions(
+      status: { type: "String", defaultValue: "any" }
+    ) {
       todos(
-        first: 2147483647  # max GraphQLInt
+        first: 10
+        status: $status
       ) @connection(key: "TodoList_todos") {
         edges {
           node {

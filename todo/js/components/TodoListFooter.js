@@ -52,11 +52,16 @@ class TodoListFooter extends React.Component {
 export default createFragmentContainer(
   TodoListFooter,
   graphql`
-    fragment TodoListFooter_viewer on User {
+    fragment TodoListFooter_viewer on User
+    @argumentDefinitions(
+      first: { type: "Int", defaultValue: 1 }
+      status: { type: "String", defaultValue: "any" }
+    ) {
       id,
       completedCount,
       todos(
-        first: 2147483647  # max GraphQLInt
+        first: $first
+        status: $status
       ) @connection(key: "TodoList_todos") {
         edges {
           node {
